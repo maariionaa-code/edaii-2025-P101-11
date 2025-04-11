@@ -3,62 +3,53 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Helper function to extract file name from a file path.
-static char* extractFileName(const char *filepath) {
-    const char *p = strrchr(filepath, '/');
-    return strdup(p ? p + 1 : filepath);
+Document* initDocument(int id, const char *title, const char *body) {
+    Document *doc = malloc(sizeof(Document));
+    if (!doc) return NULL;
+
+    doc->id = id;
+    doc->title = strdup(title);
+    doc->body = strdup(body);
+    doc->links = NULL; // You could parse links from body here
+
+    return doc;
 }
 
-Document* initDocument(const char *filepath) {
+Document* initDocumentFromFile(const char *filepath, int id) {
     FILE *file = fopen(filepath, "r");
     if (!file) {
         fprintf(stderr, "Could not open file: %s\n", filepath);
         return NULL;
     }
-    
-    // Allocate and fill in the Document structure
-    Document *doc = malloc(sizeof(Document));
-    if (!doc) {
+
+    char title[256];
+    if (!fgets(title, sizeof(title), file)) {
         fclose(file);
         return NULL;
     }
-    
-    doc->filepath = strdup(filepath);
-    doc->filename = extractFileName(filepath);
-    
-    // Get file size for content allocation
+    title[strcspn(title, "\n")] = 0;
+
     fseek(file, 0, SEEK_END);
-    long filesize = ftell(file);
+    long size = ftell(file);
     rewind(file);
-    
-    doc->content = malloc(filesize + 1);
-    if (!doc->content) {
-        fclose(file);
-        free(doc->filepath);
-        free(doc->filename);
-        free(doc);
-        return NULL;
-    }
-    
-    fread(doc->content, 1, filesize, file);
-    doc->content[filesize] = '\0';
-    
+    char *content = malloc(size + 1);
+    fread(content, 1, size, file);
+    content[size] = '\0';
     fclose(file);
-    return doc;
+
+    return initDocument(id, title, content);
 }
 
 void freeDocument(Document *doc) {
-    if (doc) {
-        free(doc->filepath);
-        free(doc->filename);
-        free(doc->content);
-        free(doc);
-    }
+    if (!doc) return;
+    free(doc->title);
+    free(doc->body);
+    freeLinks(doc->links);
+    free(doc);
 }
 
 void printDocument(Document *doc) {
-    if (doc) {
-        printf("Filename: %s\n", doc->filename);
-        printf("Content:\n%s\n", doc->content);
-    }
+    if (!doc) return;
+    printf("ID: %d\nTitle: %s\nBody:\n%s\n", doc->id, doc->title, doc->body);
+    printLinks(doc->links);
 }

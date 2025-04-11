@@ -39,11 +39,10 @@ void freeDocuments(DocumentNode *head) {
 }
 
 void printDocuments(DocumentNode *head) {
-    int index = 0;
     while (head) {
-        printf("[%d] %s\n", index, head->doc->filename);
+        printf("ID: %d | Title: %s\n", head->doc->id, head->doc->title);
+        printLinks(head->doc->links);
         head = head->next;
-        index++;
     }
 }
 
@@ -53,32 +52,30 @@ DocumentNode* loadDocuments(const char *directoryPath) {
         fprintf(stderr, "Could not open directory: %s\n", directoryPath);
         return NULL;
     }
-    
+
     struct dirent *entry;
     DocumentNode *docList = NULL;
-    
+    int id_counter = 0;
+
     while ((entry = readdir(dir)) != NULL) {
-        // Skip "." and ".."
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
             continue;
-        
-        // Build full file path
+
         char fullPath[1024];
         snprintf(fullPath, sizeof(fullPath), "%s/%s", directoryPath, entry->d_name);
-        
-        // Optionally: check if it's a regular file using stat()
+
         struct stat st;
         if (stat(fullPath, &st) == -1)
             continue;
         if (!S_ISREG(st.st_mode))
             continue;
-        
-        Document *doc = initDocument(fullPath);
+
+        Document *doc = initDocumentFromFile(fullPath, id_counter++);
         if (doc) {
             appendDocument(&docList, doc);
         }
     }
-    
+
     closedir(dir);
     return docList;
 }

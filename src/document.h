@@ -1,17 +1,18 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
+#include "links_list.h"
+
 typedef struct Document {
-    char *filepath;
-    char *filename;
-    char *content;
+    int id;
+    char *title;
+    char *body;
+    LinkNode *links;
 } Document;
 
-// Initialize a Document from a given file path.
-// It allocates memory for filepath, filename, and content.
-Document* initDocument(const char *filepath);
+Document* initDocument(int id, const char *title, const char *body);
+Document* initDocumentFromFile(const char *filepath, int id);
 void freeDocument(Document *doc);
 void printDocument(Document *doc);
-
 
 #endif // DOCUMENT_H

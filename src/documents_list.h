@@ -8,13 +8,10 @@ typedef struct DocumentNode {
     struct DocumentNode *next;
 } DocumentNode;
 
-// Functions for managing the documents linked list
 DocumentNode* createDocumentNode(Document *doc);
 void appendDocument(DocumentNode **head, Document *doc);
 void freeDocuments(DocumentNode *head);
 void printDocuments(DocumentNode *head);
-
-// Load all documents from a directory (dataset)
 DocumentNode* loadDocuments(const char *directoryPath);
 
 #endif // DOCUMENTS_LIST_H
