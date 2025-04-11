@@ -1,11 +1,13 @@
 #include "sample_lib_test.c"
+#include "document_test.c"
+#include "documents_list_test.c"
+#include "links_list_test.c"
 #include "utils.h"
-#include <stdio.h>
 
 int main() {
-  {
-    // Call all test modules you want to run here
-    sample_lib_test();
-  }
+  sample_lib_test();
+  document_test();
+  documents_list_test();
+  links_list_test();
   allsuccess();
 }
