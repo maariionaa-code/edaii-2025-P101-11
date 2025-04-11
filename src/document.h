@@ -13,6 +13,5 @@ Document* initDocument(const char *filepath);
 void freeDocument(Document *doc);
 void printDocument(Document *doc);
 
-//hola laia
 
 #endif // DOCUMENT_H
