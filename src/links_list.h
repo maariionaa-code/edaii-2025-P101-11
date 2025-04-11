@@ -1,13 +1,11 @@
 #ifndef LINKS_LIST_H
 #define LINKS_LIST_H
 
-// Node for a link
 typedef struct LinkNode {
-    int target_id;   
+    int target_id;
     struct LinkNode *next;
 } LinkNode;
 
-// Function prototypes for the links linked list
 LinkNode* createLinkNode(int target_id);
 void appendLink(LinkNode **head, int target_id);
 void freeLinks(LinkNode *head);
