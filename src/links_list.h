@@ -3,13 +3,13 @@
 
 // Node for a link
 typedef struct LinkNode {
-    char *link;             // e.g., URL or a reference string
+    int target_id;   
     struct LinkNode *next;
 } LinkNode;
 
 // Function prototypes for the links linked list
-LinkNode* createLinkNode(const char *link);
-void appendLink(LinkNode **head, const char *link);
+LinkNode* createLinkNode(int target_id);
+void appendLink(LinkNode **head, int target_id);
 void freeLinks(LinkNode *head);
 void printLinks(LinkNode *head);
 
