@@ -5,7 +5,7 @@
 
 # Authors
 
-Group number: G10
+Group number: G11
 
 - laia.escudero01@estudiant.upf.edu
 - mariona.espi01@estudiant.upf.edu
