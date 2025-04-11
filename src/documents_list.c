@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+//creates a new DocumentNode to hold a Document in the linked list
 DocumentNode* createDocumentNode(Document *doc) {
     DocumentNode *node = malloc(sizeof(DocumentNode));
     if (!node) {
@@ -16,6 +17,8 @@ DocumentNode* createDocumentNode(Document *doc) {
     return node;
 }
 
+
+//appends a new document to the end of the linked list of documents
 void appendDocument(DocumentNode **head, Document *doc) {
     if (*head == NULL) {
         *head = createDocumentNode(doc);
@@ -28,24 +31,27 @@ void appendDocument(DocumentNode **head, Document *doc) {
     current->next = createDocumentNode(doc);
 }
 
+//frees all memory associated with the linked list of documents
 void freeDocuments(DocumentNode *head) {
     DocumentNode *tmp;
     while (head) {
         tmp = head;
         head = head->next;
-        freeDocument(tmp->doc);
-        free(tmp);
+        freeDocument(tmp->doc); //frees title, body, and links
+        free(tmp);              //frees the node itself
     }
 }
 
+//prints a list of all documents (ID and title) and their links
 void printDocuments(DocumentNode *head) {
     while (head) {
         printf("ID: %d | Title: %s\n", head->doc->id, head->doc->title);
-        printLinks(head->doc->links);
+        printLinks(head->doc->links); //also print all outgoing links
         head = head->next;
     }
 }
 
+//loads all text files from a given directory into a linked list of documents
 DocumentNode* loadDocuments(const char *directoryPath) {
     DIR *dir = opendir(directoryPath);
     if (!dir) {
@@ -57,19 +63,24 @@ DocumentNode* loadDocuments(const char *directoryPath) {
     DocumentNode *docList = NULL;
     int id_counter = 0;
 
+     //iterate over each file entry in the directory
     while ((entry = readdir(dir)) != NULL) {
+        //skip current and parent directory entries
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
             continue;
 
+        //construct the full file path
         char fullPath[1024];
         snprintf(fullPath, sizeof(fullPath), "%s/%s", directoryPath, entry->d_name);
 
+        //check if it's a regular file
         struct stat st;
         if (stat(fullPath, &st) == -1)
             continue;
         if (!S_ISREG(st.st_mode))
             continue;
 
+        //create a document from file and append it to the list
         Document *doc = initDocumentFromFile(fullPath, id_counter++);
         if (doc) {
             appendDocument(&docList, doc);
