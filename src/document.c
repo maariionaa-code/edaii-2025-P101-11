@@ -10,9 +10,20 @@ Document* initDocument(int id, const char *title, const char *body) {
     doc->id = id;
     doc->title = strdup(title);
     doc->body = strdup(body);
-    doc->links = NULL; // You could parse links from body here
+    doc->links = NULL;
 
     return doc;
+}
+
+void parseLinks(Document *doc) {
+    const char *p = doc->body;
+    while ((p = strstr(p, "[link:")) != NULL) {
+        int id;
+        if (sscanf(p, "[link:%d]", &id) == 1) {
+            appendLink(&doc->links, id);
+        }
+        p += 6; // Move forward to avoid infinite loop
+    }
 }
 
 Document* initDocumentFromFile(const char *filepath, int id) {
@@ -37,7 +48,10 @@ Document* initDocumentFromFile(const char *filepath, int id) {
     content[size] = '\0';
     fclose(file);
 
-    return initDocument(id, title, content);
+    Document *doc = initDocument(id, title, content);
+    if (doc) parseLinks(doc);
+
+    return doc;
 }
 
 void freeDocument(Document *doc) {
