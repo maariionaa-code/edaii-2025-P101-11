@@ -1,39 +1,39 @@
-# Get all source files except main.c
+#get all source files except main.c
 SRC_FILES := $(filter-out src/main.c, $(wildcard src/*.c))
 
-# Build the main program
+#build the main program
 compile:
 	gcc -Wall -Wextra -Werror src/main.c $(SRC_FILES) -o main.out
 
-# Run the main program
+#run the main program with default dataset
 r:
 	make compile
-	./main.out
+	./main.out datasets/wikipedia12
 
-# Run Valgrind
+#run Valgrind with the default dataset
 v:
 	make compile
-	valgrind --leak-check=full --show-leak-kinds=all ./main.out
+	valgrind --leak-check=full --show-leak-kinds=all ./main.out datasets/wikipedia12
 
-# Compile with debugging symbols
+#compile with debug symbols
 compiledebug:
 	gcc src/main.c $(SRC_FILES) -g -o main.out
 
-# Run with GDB
+#run with GDB (default dataset)
 d:
 	make compiledebug
-	gdb ./main.out
+	gdb --args ./main.out datasets/wikipedia12
 
-# Compile test suite
+#compile test suite
 compiletest:
 	gcc -Wall -Wextra -Werror test/test.c test/utils.c $(SRC_FILES) -o test.out
 
-# Run tests
+#run tests
 t:
 	make compiletest
 	./test.out
 
-# Debug test suite
+#debug test suite
 compiletestdebug:
 	gcc test/test.c test/utils.c $(SRC_FILES) -g -o test.out
 
@@ -41,14 +41,40 @@ dt:
 	make compiletestdebug
 	gdb ./test.out
 
-# Clean binaries
+#clean binaries
 c:
 	rm -f main.out test.out
 
-# Format code
+#format code using clang-format
 f:
 	clang-format -i src/*.c src/*.h test/*.c test/*.h
 
-# Format check (optional, if implemented)
+#check formatting script (if implemented)
 cf:
 	./check-format.sh
+
+#run all datasets automatically
+runall:
+	make compile
+	for dataset in datasets/wikipedia*; do \
+	  echo "=============================="; \
+	  echo "Running with: $$dataset"; \
+	  echo "=============================="; \
+	  ./main.out $$dataset; \
+	  echo; \
+	done
+
+#show available targets
+help:
+	@echo "Available targets:"
+	@echo "  make compile       - Build main program"
+	@echo "  make r             - Run main with default dataset"
+	@echo "  make v             - Run with Valgrind"
+	@echo "  make compiledebug  - Compile with debug symbols"
+	@echo "  make d             - Run debugger with default dataset"
+	@echo "  make t             - Run unit tests"
+	@echo "  make dt            - Debug test suite"
+	@echo "  make c             - Clean output binaries"
+	@echo "  make f             - Format source code"
+	@echo "  make runall        - Run main with all datasets"
+	@echo "  make help          - Show this help"
