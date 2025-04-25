@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 int containsWord(const char *text, const char *word) {
     char *copy = strdup(text);
