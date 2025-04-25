@@ -4,6 +4,10 @@
 #include "document.h"
 #include "links_list.h"
 #include "sample_lib.h"
+#include "query_list.h"
+#include "search.h"
+#include "queue.h"
+
 
 int main(int argc, char *argv[]) {
     printf("\nWelcome to Lab 1!\n\n");
@@ -20,29 +24,20 @@ int main(int argc, char *argv[]) {
     printf("\nDocuments in '%s':\n", datasetPath);
     printDocuments(docs);
 
-    printf("\nEnter the index of the document to view: ");
-    int index;
-    if (scanf("%d", &index) != 1) {
-        fprintf(stderr, "Invalid input.\n");
-        freeDocuments(docs);
-        return EXIT_FAILURE;
-    }
+    while (1) {
+        char input[201];
+        printRecentQueries();
+        printf("Search: ");
+        if (!fgets(input, sizeof(input), stdin)) break;
 
-    DocumentNode *current = docs;
-    int i = 0;
-    while (current && i < index) {
-        current = current->next;
-        i++;
-    }
+        input[strcspn(input, "\n")] = '\0'; 
+        if (strlen(input) == 0) break;      
 
-    if (!current) {
-        fprintf(stderr, "Index out of range.\n");
-        freeDocuments(docs);
-        return EXIT_FAILURE;
+        enqueueQuery(input);
+        QueryNode *query = initQueryFromString(input);
+        searchDocumentsLinear(docs, query);
+        freeQuery(query);
     }
-
-    printf("\nViewing Document ID %d:\n", current->doc->id);
-    printDocument(current->doc);
 
     freeDocuments(docs);
 
