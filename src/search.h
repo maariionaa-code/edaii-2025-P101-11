@@ -1,10 +1,10 @@
 #ifndef SEARCH_H
 #define SEARCH_H
 
-#include "documents_list.h"
 #include "query_list.h"
+#include "hashmap.h" // Include hashmap.h
 
-//performs a linear search of documents based on a query
-void searchDocumentsLinear(DocumentNode *docs, QueryNode *query);
+// Performs a search of documents based on a query using the reverse index.
+void searchDocuments(HashMap *index, QueryNode *query);
 
-#endif
+#endif // SEARCH_H
