@@ -10,11 +10,8 @@
 char *normalizeWord(const char *word) {
     if (!word) return NULL;
     size_t len = strlen(word);
-    char *normalized = malloc(len + 1); // Allocate enough memory
-    if (!normalized) {
-        perror("Failed to allocate memory in normalizeWord");
-        return NULL;
-    }
+    char *normalized = malloc(len + 1);
+    if (!normalized) { perror("malloc"); return NULL; }
     size_t j = 0;
     for (size_t i = 0; i < len; i++) {
         if (isalnum((unsigned char)word[i])) {
@@ -209,7 +206,6 @@ void searchDocumentsLinear(DocumentNode *docs, QueryNode *query) {
         }
     }
 }
-
 HashMap *buildReverseIndex(DocumentNode *docs) {
     HashMap *index = createHashMap(1000);
     if (!index) return NULL;
@@ -217,11 +213,17 @@ HashMap *buildReverseIndex(DocumentNode *docs) {
     while (docs) {
         char *title = strdup(docs->doc->title);
         char *body  = strdup(docs->doc->body);
-        if (!title || !body) { freeHashMap(index); return NULL; }
+        if (!title || !body) {
+            freeHashMap(index);
+            return NULL;
+        }
 
-        for (char *tok = strtok(title, " \n\t.,;!?()[]{}"); tok; tok = strtok(NULL, " \n\t.,;!?()[]{}")) {
+        for (char *tok = strtok(title, " \n\t.,;!?()[]{}");
+             tok;
+             tok = strtok(NULL, " \n\t.,;!?()[]{}"))
+        {
             char *w = normalizeWord(tok);
-            if (w) {
+            if (w && *w) {
                 HashSet *set = NULL;
                 if (searchHashMap(index, w, (void**)&set)) {
                     insertHashSet(set, docs->doc);
@@ -233,12 +235,29 @@ HashMap *buildReverseIndex(DocumentNode *docs) {
                 free(w);
             }
         }
-        for (char *tok = strtok(body, " \n\t.,;!?()[]{}"); tok; tok = strtok(NULL, " \n\t.,;!?()[]{}")) {
+
+        for (char *tok = strtok(body, " \n\t.,;!?()[]{}");
+             tok;
+             tok = strtok(NULL, " \n\t.,;!?()[]{}"))
+        {
+            char *w = normalizeWord(tok);
+            if (w && *w) {
+                HashSet *set = NULL;
+                if (searchHashMap(index, w, (void**)&set)) {
+                    insertHashSet(set, docs->doc);
+                } else {
+                    set = createHashSet();
+                    insertHashSet(set, docs->doc);
+                    insertHashMap(index, w, set);
+                }
+                free(w);
+            }
         }
+
         free(title);
         free(body);
         docs = docs->next;
     }
+
     return index;
 }
-
