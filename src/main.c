@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     printf("\nWelcome to Lab 3 (Reverse-Index Search)!\n\n");
     printf("Factorial of 4 is %d\n", fact(4));
 
-    const char *datasetPath = (argc > 1) ? argv[1] : "datasets/wikipedia12";
+    const char *datasetPath = (argc > 1) ? argv[1] : "datasets/wikipedia270";
 
     DocumentNode *docs = loadDocuments(datasetPath);
     if (!docs) {
