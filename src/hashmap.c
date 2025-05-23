@@ -1,4 +1,5 @@
 #include "hashmap.h"
+#include "document.h"
 #include <stdio.h>
 
 // Hash function (djb2 algorithm)
@@ -150,3 +151,26 @@ void freeHashMap(HashMap *map) {
     free(map->values);
     free(map);
 }
+
+void printHashMap(HashMap *map) {
+    if (!map) {
+        printf("null hashmap\n");
+        return;
+    }
+    for (size_t i = 0; i < map->capacity; i++) {
+        if (map->keys[i]) {
+            printf("%s:", map->keys[i]);
+            HashSet *set = (HashSet*)map->values[i];
+            if (set) {
+                for (size_t j = 0; j < set->capacity; j++) {
+                    if (set->elements[j]) {
+                        Document *d = (Document*)set->elements[j];
+                        printf(" %d", d->id);
+                    }
+                }
+            }
+            printf("\n");
+        }
+    }
+}
+

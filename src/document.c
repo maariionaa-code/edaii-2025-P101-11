@@ -39,29 +39,40 @@ Document* initDocumentFromFile(const char *filepath, int id) {
         return NULL;
     }
 
-    //read first line as the title
-    char title[256];
-    if (!fgets(title, sizeof(title), file)) {
+    char discard[256];
+    if (!fgets(discard, sizeof(discard), file)) {
         fclose(file);
         return NULL;
     }
-    title[strcspn(title, "\n")] = 0; //remove newline
 
-    //read entire file into content (body)
+    char title_buf[256];
+    if (!fgets(title_buf, sizeof(title_buf), file)) {
+        fclose(file);
+        return NULL;
+    }
+    title_buf[strcspn(title_buf, "\n")] = '\0'; 
+
+    long start = ftell(file);
     fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    rewind(file);
-    char *content = malloc(size + 1);
-    fread(content, 1, size, file);
-    content[size] = '\0';
+    long end = ftell(file);
+    long body_len = end - start;
+    fseek(file, start, SEEK_SET);
+
+    char *body_buf = malloc(body_len + 1);
+    if (!body_buf) {
+        fclose(file);
+        return NULL;
+    }
+    fread(body_buf, 1, body_len, file);
+    body_buf[body_len] = '\0';
     fclose(file);
 
-    //initialize the document and parse its links
-    Document *doc = initDocument(id, title, content);
+    Document *doc = initDocument(id, title_buf, body_buf);
+    free(body_buf);
     if (doc) parseLinks(doc);
-
     return doc;
 }
+
 
 //frees memory used by the document, including title, body, and links.
 void freeDocument(Document *doc) {

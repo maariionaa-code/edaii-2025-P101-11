@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
     printDocuments(docs);
 
     HashMap *index = buildReverseIndex(docs);
+
     if (!index) {
         fprintf(stderr, "Failed to build reverse index\n");
         freeDocuments(docs);
