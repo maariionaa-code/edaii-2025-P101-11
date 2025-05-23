@@ -26,8 +26,7 @@ char *normalizeWord(const char *word) {
 }
 
 // Helper function to extract document snippet
-char *extractSnippet(const char *text, const char *word, int word_position) {
-    int snippet_length = 200;
+char *extractSnippet(const char *text, int word_position) {
     int start = word_position - 50;
     int end = word_position + 50;
 
@@ -63,7 +62,7 @@ void searchDocuments(HashMap *index, QueryNode *query) {
         if (searchHashMap(index, normalizedWord, (void **)&docIds)) { // Search in main index
              if (!current->is_excluded) {
                 if (!results) results = createHashSet();
-                 for(int i = 0; i < docIds->size; i++){
+                 for(size_t i = 0; i < docIds->size; i++){
                     if(docIds->elements[i] != NULL){
                          insertHashSet(results, docIds->elements[i]);
                     }
@@ -85,7 +84,7 @@ void searchDocuments(HashMap *index, QueryNode *query) {
                 Document *doc = (Document *)results->elements[i];
                 printf("(%d) %s\n", doc->id, doc->title);
                 // Extract and print snippet
-                char *snippet = extractSnippet(doc->body, query->word, 10); // Example: Use offset 10
+                char *snippet = extractSnippet(doc->body, 10); // Example: Use offset 10
                 if (snippet)
                 {
                     printf("Snippet: ...%s...\n", snippet);

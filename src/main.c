@@ -8,7 +8,6 @@
 #include "search.h"
 #include "queue.h"
 
-
 int main(int argc, char *argv[]) {
     printf("\nWelcome to Lab 1!\n\n");
     printf("Factorial of 4 is %d\n", fact(4));
@@ -35,7 +34,7 @@ int main(int argc, char *argv[]) {
 
         enqueueQuery(input);
         QueryNode *query = initQueryFromString(input);
-        searchDocumentsLinear(docs, query);
+        searchDocuments(docs, query);
         freeQuery(query);
     }
 
