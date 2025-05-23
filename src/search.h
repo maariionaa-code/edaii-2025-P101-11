@@ -9,6 +9,7 @@ HashMap *buildReverseIndex(DocumentNode *docs);
 
 void searchDocuments(HashMap *index, QueryNode *query);
 
+
 void searchDocumentsLinear(DocumentNode *docs, QueryNode *query);
 
 void serializeReverseIndex(HashMap *index, const char *filename);
