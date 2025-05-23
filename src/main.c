@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
         enqueueQuery(input);
         QueryNode *query = initQueryFromString(input);
-        searchDocuments(docs, query);
+        searchDocumentsLinear(docs, query);
         freeQuery(query);
     }
 

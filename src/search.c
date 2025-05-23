@@ -77,7 +77,7 @@ void searchDocuments(HashMap *index, QueryNode *query) {
     if (results && results->size > 0)
     {
         printf("Matching Documents:\n");
-        for (int i = 0; i < results->capacity; i++)
+        for (size_t i = 0; i < results->capacity; i++)
         {
             if (results->elements[i] != NULL)
             {
@@ -251,4 +251,17 @@ HashMap *deserializeReverseIndex(const char *filename) {
     }
     fclose(file);
     return index;
+}
+
+
+void searchDocumentsLinear(DocumentNode *docs, QueryNode *query) {
+    int printed = 0;
+    for (DocumentNode *node = docs; node && printed < 5; node = node->next) {
+        Document *d = node->doc;
+        if (strcasestr(d->body, query->word)) {
+            printf("(%d) %s\n", d->id, d->title);
+            printf("---\n");
+            printed++;
+        }
+    }
 }
