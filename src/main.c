@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "documents_list.h"
 #include "document.h"
 #include "links_list.h"
@@ -9,7 +10,7 @@
 #include "queue.h"
 
 int main(int argc, char *argv[]) {
-    printf("\nWelcome to Lab 1!\n\n");
+    printf("\nWelcome to Lab 3 (Reverse-Index Search)!\n\n");
     printf("Factorial of 4 is %d\n", fact(4));
 
     const char *datasetPath = (argc > 1) ? argv[1] : "datasets/wikipedia12";
@@ -23,21 +24,33 @@ int main(int argc, char *argv[]) {
     printf("\nDocuments in '%s':\n", datasetPath);
     printDocuments(docs);
 
+    HashMap *index = buildReverseIndex(docs);
+    if (!index) {
+        fprintf(stderr, "Failed to build reverse index\n");
+        freeDocuments(docs);
+        return EXIT_FAILURE;
+    }
+
     while (1) {
         char input[201];
         printRecentQueries();
         printf("Search: ");
-        if (!fgets(input, sizeof(input), stdin)) break;
+        if (!fgets(input, sizeof(input), stdin))
+            break;
 
-        input[strcspn(input, "\n")] = '\0'; 
-        if (strlen(input) == 0) break;      
+        input[strcspn(input, "\n")] = '\0';
+        if (strlen(input) == 0)
+            break;
 
         enqueueQuery(input);
         QueryNode *query = initQueryFromString(input);
-        searchDocumentsLinear(docs, query);
+
+        searchDocuments(index, query);
+
         freeQuery(query);
     }
 
+    freeHashMap(index);
     freeDocuments(docs);
 
     return EXIT_SUCCESS;

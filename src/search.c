@@ -104,62 +104,6 @@ void searchDocuments(HashMap *index, QueryNode *query) {
     freeHashSet(results);
 }
 
-// Function to build the reverse index
-HashMap *buildReverseIndex(DocumentNode *docs) {
-    HashMap *index = createHashMap(1000); // Start with a reasonable initial size
-    if (!index) return NULL;
-
-    while (docs) {
-        // Normalize title and body, and add words to index
-        char *title = strdup(docs->doc->title);
-        char *body = strdup(docs->doc->body);
-        if(!title || !body){
-            freeHashMap(index);
-            return NULL;
-        }
-        char *title_token = strtok(title, " \n\t.,;!?()[]{}");
-        char *body_token = strtok(body, " \n\t.,;!?()[]{}");
-
-        // Process title words
-        while (title_token) {
-            char *normalizedWord = normalizeWord(title_token);
-            if (normalizedWord) {
-                HashSet *docIds = NULL;
-                if (searchHashMap(index, normalizedWord, (void **)&docIds)) {
-                    insertHashSet(docIds, docs->doc);
-                } else {
-                    docIds = createHashSet();
-                    insertHashSet(docIds, docs->doc);
-                    insertHashMap(index, normalizedWord, docIds);
-                }
-                free(normalizedWord);
-            }
-            title_token = strtok(NULL, " \n\t.,;!?()[]{}");
-        }
-
-        // Process body words
-        while (body_token) {
-            char *normalizedWord = normalizeWord(body_token);
-            if (normalizedWord) {
-                HashSet *docIds = NULL;
-                if (searchHashMap(index, normalizedWord, (void **)&docIds)) {
-                    insertHashSet(docIds, docs->doc);
-                } else {
-                    docIds = createHashSet();
-                    insertHashSet(docIds, docs->doc);
-                    insertHashMap(index, normalizedWord, docIds);
-                }
-                free(normalizedWord);
-            }
-            body_token = strtok(NULL, " \n\t.,;!?()[]{}");
-        }
-        free(title);
-        free(body);
-        docs = docs->next;
-    }
-    return index;
-}
-
 // Function to serialize the reverse index to a file
 void serializeReverseIndex(HashMap *index, const char *filename) {
     if (!index || !filename) return;
@@ -265,3 +209,36 @@ void searchDocumentsLinear(DocumentNode *docs, QueryNode *query) {
         }
     }
 }
+
+HashMap *buildReverseIndex(DocumentNode *docs) {
+    HashMap *index = createHashMap(1000);
+    if (!index) return NULL;
+
+    while (docs) {
+        char *title = strdup(docs->doc->title);
+        char *body  = strdup(docs->doc->body);
+        if (!title || !body) { freeHashMap(index); return NULL; }
+
+        for (char *tok = strtok(title, " \n\t.,;!?()[]{}"); tok; tok = strtok(NULL, " \n\t.,;!?()[]{}")) {
+            char *w = normalizeWord(tok);
+            if (w) {
+                HashSet *set = NULL;
+                if (searchHashMap(index, w, (void**)&set)) {
+                    insertHashSet(set, docs->doc);
+                } else {
+                    set = createHashSet();
+                    insertHashSet(set, docs->doc);
+                    insertHashMap(index, w, set);
+                }
+                free(w);
+            }
+        }
+        for (char *tok = strtok(body, " \n\t.,;!?()[]{}"); tok; tok = strtok(NULL, " \n\t.,;!?()[]{}")) {
+        }
+        free(title);
+        free(body);
+        docs = docs->next;
+    }
+    return index;
+}
+
