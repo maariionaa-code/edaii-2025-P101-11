@@ -14,5 +14,6 @@ void searchDocumentsLinear(DocumentNode *docs, QueryNode *query);
 
 void serializeReverseIndex(HashMap *index, const char *filename);
 HashMap *deserializeReverseIndex(const char *filename);
+char* normalizeWord(const char *word);
 
 #endif // SEARCH_H

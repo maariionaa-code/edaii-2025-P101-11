@@ -61,27 +61,19 @@ DocumentNode* loadDocuments(const char *directoryPath) {
 
     struct dirent *entry;
     DocumentNode *docList = NULL;
-    int id_counter = 0;
 
-     //iterate over each file entry in the directory
     while ((entry = readdir(dir)) != NULL) {
-        //skip current and parent directory entries
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
             continue;
 
-        //construct the full file path
         char fullPath[1024];
         snprintf(fullPath, sizeof(fullPath), "%s/%s", directoryPath, entry->d_name);
 
-        //check if it's a regular file
         struct stat st;
-        if (stat(fullPath, &st) == -1)
-            continue;
-        if (!S_ISREG(st.st_mode))
+        if (stat(fullPath, &st) == -1 || !S_ISREG(st.st_mode))
             continue;
 
-        //create a document from file and append it to the list
-        Document *doc = initDocumentFromFile(fullPath, id_counter++);
+        Document *doc = documentDesserialize(fullPath);
         if (doc) {
             appendDocument(&docList, doc);
         }

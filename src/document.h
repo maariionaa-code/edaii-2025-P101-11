@@ -9,6 +9,7 @@ typedef struct Document {
     char *title;       //title of the document (first line of the file)
     char *body;        //full body/content of the document
     LinkNode *links;   //linked list of outgoing links ([link:ID] in the body)
+    float relevance;   //stores indegree
 } Document;
 
 //initializes a document with given id, title, and body
@@ -26,5 +27,9 @@ void printDocument(Document *doc);
 
 //parses the document body and adds links ([link:ID]) to the links list
 void parseLinks(Document *doc); 
+
+Document* documentDesserialize(char* path);
+
+void freeDocument(Document* doc);
 
 #endif // DOCUMENT_H
