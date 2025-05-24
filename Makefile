@@ -8,12 +8,12 @@ compile:
 #run the main program with default dataset
 r:
 	make compile
-	./main.out datasets/wikipedia270
+	./main.out datasets/wikipedia12
 
 #run Valgrind with the default dataset
 v:
 	make compile
-	valgrind --leak-check=full --show-leak-kinds=all ./main.out datasets/wikipedia270
+	valgrind --leak-check=full --show-leak-kinds=all ./main.out datasets/wikipedia12
 
 #compile with debug symbols
 compiledebug:
