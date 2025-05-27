@@ -128,7 +128,7 @@ Document* initDocumentFromFile(const char *filepath, int id) {
     FILE *file = fopen(filepath, "r");
     if (!file) 
     {
-        fprintf(stderr, "Could not open file: %s\n", filepath);
+        fprintf(stderr, "error: could not open file: %s\n", filepath);
         return NULL;
     }
 
@@ -193,7 +193,7 @@ void freeDocument(Document *doc) {
 // finally this function prints a document's id, title, and full body content to the terminal
 void printDocument(Document *doc) {
     if (!doc) return;
-    printf("ID: %d\nTitle: %s\nBody:\n%s\n", doc->id, doc->title, doc->body);
+    printf("id: %d\ntitle: %s\nbody:\n%s\n", doc->id, doc->title, doc->body);
     // it calls printlinks to show outgoing links
     printLinks(doc->links);
 }

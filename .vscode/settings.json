@@ -1,6 +1,7 @@
 {
     "files.eol": "\n",
     "files.associations": {
-        "links_list.h": "c"
+        "links_list.h": "c",
+        "stdlib.h": "c"
     },
 }
