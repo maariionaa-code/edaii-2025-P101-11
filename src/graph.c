@@ -3,29 +3,12 @@
 #include <string.h>
 #include <stdio.h>
 
-<<<<<<< HEAD
-// this function created a new document graph structure with a given number of documents, which are the nodes
-DocumentGraph *createGraph(int numDocs) {
-    // we allocate memory for the graph
-    DocumentGraph *g = malloc(sizeof(DocumentGraph));
-    // return NULL if allocation fails
-    if (!g) return NULL;
-
-    // we store the number of documents
-    g->size = numDocs;
-    // we allocate memory for the adjacency matrix (rows)
-    g->matrix = malloc(numDocs * sizeof(int*));
-    // we initialize wach row of the matrix with zeros using calloc
-    for (int i = 0; i < numDocs; i++) {
-        // each row represemts outgoing edges from a document
-=======
 DocumentGraph *createGraph(int numDocs) { //creates a new DocumentGraph structure and allocates memory for its adjacency matrix.
     DocumentGraph *g = malloc(sizeof(DocumentGraph)); //allocate memory for the DocumentGraph structure
     if (!g) return NULL; //check if memory allocation was successful
     g->size = numDocs; //set the size of the graph (number of documents/nodes)
     g->matrix = malloc(numDocs * sizeof(int*)); //allocate memory for the array of row pointers (for the 2D adjacency matrix)
     for (int i = 0; i < numDocs; i++) { 
->>>>>>> ef0611e (comments)
         g->matrix[i] = calloc(numDocs, sizeof(int));
     }
     // finally we return the created graph

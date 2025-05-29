@@ -5,103 +5,104 @@
 #include <stdlib.h>
 #include "document.h"
 #include "documents_list.h"
-#include "graph.h" // NEW: include graph interface
+#include "graph.h" 
 
 extern DocumentGraph *global_graph; // global graph from main
 
-// Normalize word: lowercase, remove punctuation
+//normalize word by converting to lowercase and removing all non-alphanumeric characters
 char *normalizeWord(const char *word) {
-    if (!word) return NULL;
-    size_t len = strlen(word);
-    char *normalized = malloc(len + 1);
-    if (!normalized) return NULL;
-    size_t j = 0;
-    for (size_t i = 0; i < len; i++) {
-        if (isalnum((unsigned char)word[i])) {
-            normalized[j++] = tolower((unsigned char)word[i]);
+    if (!word) return NULL; //handle NULL input word
+    size_t len = strlen(word); //get length of the input word
+    char *normalized = malloc(len + 1); //allocate memory for the normalize word
+    if (!normalized) return NULL; //check for malloc failure
+    size_t j = 0; //index for the normalized word
+    for (size_t i = 0; i < len; i++) { //iterate through each character of the input word.
+        if (isalnum((unsigned char)word[i])) { //check if the character is alphanumeric.
+            normalized[j++] = tolower((unsigned char)word[i]); //convert to lowercase and add to normalized word.
         }
     }
-    normalized[j] = '\0';
-    return normalized;
+    normalized[j] = '\0'; //add a NULL-temrinalization to the normalized string
+    return normalized; //return pointer to normalized string
 }
 
-// Extract snippet around word position
+//extract snippet around a specified word position
 char *extractSnippet(const char *text, int word_position) {
-    int start = word_position - 50;
-    int end = word_position + 50;
-    if (start < 0) start = 0;
-    if (end > (int)strlen(text)) end = strlen(text);
-    int actual_length = end - start;
-    if (actual_length <= 0) return NULL;
-    char *snippet = malloc(actual_length + 1);
-    if (!snippet) return NULL;
-    strncpy(snippet, text + start, actual_length);
-    snippet[actual_length] = '\0';
-    return snippet;
+    int start = word_position - 50; //calculate start position for the snippet
+    int end = word_position + 50; //calculate end position for the snippet
+    if (start < 0) start = 0; //ensure start position is not less than 0
+    if (end > (int)strlen(text)) end = strlen(text); //ensure end position doesn't exceed text length
+    int actual_length = end - start; //calculate the actual length of the snippet
+    if (actual_length <= 0) return NULL; //if length is zero or negative, return NULL
+    char *snippet = malloc(actual_length + 1); //allocate memory for the snippet
+    if (!snippet) return NULL; //check for malloc failure
+    strncpy(snippet, text + start, actual_length); //copy the snippet from the text
+    snippet[actual_length] = '\0'; //add NULL-terminate to the snippet string
+    return snippet; //return pointer to the snippet
 }
 
-// Structure to pair documents with their computed relevance
+//structure to hold a document with their computed relevance score
 typedef struct {
-    Document *doc;
-    int relevance;
+    Document *doc; //pointer to document structure
+    int relevance; //integer repsresenting the relevance score of the document
 } ScoredDocument;
 
+//comparison function to sort ScoredDocument structures by relevance in descending order
 int compareByRelevanceDesc(const void *a, const void *b) {
-    ScoredDocument *da = (ScoredDocument *)a;
-    ScoredDocument *db = (ScoredDocument *)b;
-    return db->relevance - da->relevance;
+    ScoredDocument *da = (ScoredDocument *)a; //cast void pointer to ScoredDocument pointer
+    ScoredDocument *db = (ScoredDocument *)b; //cast void pointer to ScoredDocument pointer
+    return db->relevance - da->relevance; //sort in descending order (higher relevance first)
 }
 
-// Search with reverse index and show results
+//search for documents based on a given query using a reverse index (hash map)
 void searchDocuments(HashMap *index, QueryNode *query) {
-    if (!index || !query) return;
+    if (!index || !query) return; //if index or query is NULL, do nothing
+    HashSet *results = NULL; //HashSet to store unique matching documents
+    QueryNode *current = query; //pointer to traverse the query linked list
 
-    HashSet *results = NULL;
-    QueryNode *current = query;
-
+    //iterate through each word in the search query
     while (current) {
-        char *normalizedWord = normalizeWord(current->word);
-        if (!normalizedWord) {
+        char *normalizedWord = normalizeWord(current->word); //normalize the current query word
+        if (!normalizedWord) { //if normalization fails or word is empty, move to the next query word
             current = current->next;
             continue;
         }
 
-        HashSet *docIds = NULL;
-        if (searchHashMap(index, normalizedWord, (void **)&docIds)) {
-            if (!current->is_excluded) {
-                if (!results) results = createHashSet();
-                for (size_t i = 0; i < docIds->size; i++) {
-                    if (docIds->elements[i]) {
-                        insertHashSet(results, docIds->elements[i]);
+        HashSet *docIds = NULL; //HashSet to store document IDs found for the current word
+        if (searchHashMap(index, normalizedWord, (void **)&docIds)) { //search for the reverse index for the normalized word
+            if (!current->is_excluded) {//if the query word is not marked as excluded
+                if (!results) results = createHashSet(); //if results (set of all matching documents) is not yet created, create it
+                for (size_t i = 0; i < docIds->size; i++) { //iterate through the coduments found for the current word
+                    if (docIds->elements[i]) { //check if element slot is not empty
+                        insertHashSet(results, docIds->elements[i]); //insert the matching document into the overall results set.
                     }
                 }
             }
         }
-        free(normalizedWord);
-        current = current->next;
+        free(normalizedWord); //free memory allocated for the normalized word
+        current = current->next; //move to the next word in the query
     }
 
-    if (results && results->size > 0) {
-        ScoredDocument *scored = malloc(results->size * sizeof(ScoredDocument));
-        int count = 0;
-        for (size_t i = 0; i < results->capacity; i++) {
-            if (results->elements[i]) {
-                Document *doc = (Document *)results->elements[i];
-                scored[count].doc = doc;
-                scored[count].relevance = graphGetIndegree(global_graph, doc->id);
-                count++;
+    if (results && results->size > 0) { //after processing all query words, if any results were found
+        ScoredDocument *scored = malloc(results->size * sizeof(ScoredDocument)); //allocate memory for an array of SortedDocument structures
+        int count = 0; //counter for the number of documents added to scored array
+        for (size_t i = 0; i < results->capacity; i++) { //iterate through the elements of the results HashSet
+            if (results->elements[i]) { //check if the element slot is not empty.
+                Document *doc = (Document *)results->elements[i]; //cast void pointer to Document pointer
+                scored[count].doc = doc; //store the document
+                scored[count].relevance = graphGetIndegree(global_graph, doc->id); //calculate the relevance using the indegree from the global graph
+                count++; //increment the count of scored documents
             }
         }
 
-        qsort(scored, count, sizeof(ScoredDocument), compareByRelevanceDesc);
+        qsort(scored, count, sizeof(ScoredDocument), compareByRelevanceDesc); //sort the scored documents array by relevance in descending order
 
-        for (int i = 0; i < count && i < 5; i++) {
-            printf("(%d) %s\n", i, scored[i].doc->title);
+        for (int i = 0; i < count && i < 5; i++) { //print the top 5 relevant documents
+            printf("(%d) %s\n", i, scored[i].doc->title); //prnint document rank and title
             printf("---\n");
-            char *snippet = extractSnippet(scored[i].doc->body, 10);
-            if (snippet) {
-                printf("%s\n", snippet);
-                free(snippet);
+            char *snippet = extractSnippet(scored[i].doc->body, 10); //extract and print a snippet from the document body, snippet around position 10
+            if (snippet) { 
+                printf("%s\n", snippet); //print thr snippet
+                free(snippet); //free memory allocated for the snippet
             }
             printf("---\nrelevance score: %d\n\n", scored[i].relevance);
         }
