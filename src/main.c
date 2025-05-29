@@ -21,7 +21,7 @@ int compareDocs(const void *a, const void *b) {
 }
 
 int main(int argc, char *argv[]) {
-    printf("\nWelcome to Lab 4 (Graph-Based Search)!\n\n");
+    printf("\nWelcome to EDA 2!\n\n");
     printf("Factorial of 4 is %d\n", fact(4));
 
     const char *datasetPath = (argc > 1) ? argv[1] : "datasets/wikipedia270";
