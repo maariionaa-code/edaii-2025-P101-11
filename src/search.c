@@ -104,42 +104,46 @@ void searchDocuments(HashMap *index, QueryNode *query) {
                 printf("%s\n", snippet); //print thr snippet
                 free(snippet); //free memory allocated for the snippet
             }
-            printf("---\nrelevance score: %d\n\n", scored[i].relevance);
+            printf("---\nrelevance score: %d\n\n", scored[i].relevance); //print relevance score
         }
 
-        printf("[%d results]\n", count);
-        free(scored);
+        printf("[%d results]\n", count); //print total number of results found
+        free(scored); //free memory allocated for the scored documents array
     } else {
-        printf("No matching documents found.\n");
+        printf("No matching documents found.\n"); //if no matching documents were found print this
     }
 
-    freeHashSet(results);
+    freeHashSet(results); //free the HashSet used to stored initial search results
 }
 
-// Build reverse index
+//build reverse index from a list of documents
 HashMap *buildReverseIndex(DocumentNode *docs) {
-    HashMap *index = createHashMap(1000);
-    if (!index) return NULL;
+    HashMap *index = createHashMap(1000); //create a new HashMap for the reverse index with an initial capacity of 1000
+    if (!index) return NULL; //check for HashMap creation failure
 
+    //traverse the linked list of DocumentNode structures
     while (docs) {
-        char *title = strdup(docs->doc->title);
+        //duplicate the title and body strings because strtok modifies the string in place
+        char *title = strdup(docs->doc->title); 
         char *body  = strdup(docs->doc->body);
-        if (!title || !body) { freeHashMap(index); return NULL; }
+        if (!title || !body) { freeHashMap(index); return NULL; } //check for strdup failures, free the partially built HashMap, free any successfully duplicated string
 
-        for (char *tok = strtok(title, " \n\t.,;!?()[]{}"); tok; tok = strtok(NULL, " \n\t.,;!?()[]{}")) {
-            char *w = normalizeWord(tok);
-            if (w) {
-                HashSet *set = NULL;
-                if (searchHashMap(index, w, (void**)&set)) {
-                    insertHashSet(set, docs->doc);
+        //process words from the document title
+        for (char *tok = strtok(title, " \n\t.,;!?()[]{}"); tok; tok = strtok(NULL, " \n\t.,;!?()[]{}")) { //strtok tokenizes the string using specified delimiters(space, newline, tab, punctuation)
+            char *w = normalizeWord(tok); //normalize the current token (word)
+            if (w) { //if normalization was successful (word is not empty)
+                HashSet *set = NULL; //pointer to a HashSet of documents
+                if (searchHashMap(index, w, (void**)&set)) { 
+                    insertHashSet(set, docs->doc); //if word exists, add the current documents to its HashSet
                 } else {
-                    set = createHashSet();
-                    insertHashSet(set, docs->doc);
-                    insertHashMap(index, w, set);
+                    set = createHashSet(); //if word is new, create a new HashSet for it
+                    insertHashSet(set, docs->doc); //add the current document to the new HashSet
+                    insertHashMap(index, w, set); //insert the new word-HashSet pair into the HashMap
                 }
-                free(w);
+                free(w); //free memory allocated for the normalized word
             }
         }
+        //process words from the document body, similar to title processing
         for (char *tok = strtok(body, " \n\t.,;!?()[]{}"); tok; tok = strtok(NULL, " \n\t.,;!?()[]{}")) {
             char *w = normalizeWord(tok);
             if (w) {
@@ -154,22 +158,23 @@ HashMap *buildReverseIndex(DocumentNode *docs) {
                 free(w);
             }
         }
-        free(title);
-        free(body);
-        docs = docs->next;
+        free(title); //free duplicated title string
+        free(body); //free duplicated body string
+        docs = docs->next; //return the pointer to the built reverse index
     }
     return index;
 }
 
-// Optional: Linear search fallback
+//performs a linear search for documents containing a query word
 void searchDocumentsLinear(DocumentNode *docs, QueryNode *query) {
-    int printed = 0;
-    for (DocumentNode *node = docs; node && printed < 5; node = node->next) {
-        Document *d = node->doc;
+    int printed = 0; //counter for the number of documents printed
+    for (DocumentNode *node = docs; node && printed < 5; node = node->next) { //iterate through the linked list of DocumentNodes until end or 5 documents are printed
+        Document *d = node->doc; //get document pointer from the current node
+        //check if the query word exists in the document body
         if (strcasestr(d->body, query->word)) {
-            printf("(%d) %s\n", d->id, d->title);
+            printf("(%d) %s\n", d->id, d->title); //print document ID and title
             printf("---\n");
-            printed++;
+            printed++; //increment the count of printed documents
         }
     }
 }
