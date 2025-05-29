@@ -9,11 +9,10 @@ HashMap *buildReverseIndex(DocumentNode *docs);
 
 void searchDocuments(HashMap *index, QueryNode *query);
 
-
 void searchDocumentsLinear(DocumentNode *docs, QueryNode *query);
 
-void serializeReverseIndex(HashMap *index, const char *filename);
-HashMap *deserializeReverseIndex(const char *filename);
 char* normalizeWord(const char *word);
+char* extractSnippet(const char *text, int word_position);
+int compareByRelevanceDesc(const void *a, const void *b);
 
 #endif // SEARCH_H
