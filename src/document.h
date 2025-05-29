@@ -30,6 +30,4 @@ void parseLinks(Document *doc);
 
 Document* documentDesserialize(char* path);
 
-void freeDocument(Document* doc);
-
 #endif // DOCUMENT_H
