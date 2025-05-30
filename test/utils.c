@@ -42,3 +42,8 @@ void runningtest(const char *description) {
 void allsuccess() {
   fprintf(stderr, "\033[0;32m--- ALL TESTS PASSED --- \n\033[0m");
 }
+
+void errortest(const char *description) {
+  fprintf(stderr, "\033[0;31m    ERROR: %s\033[0m\n", description);
+  assert(0); 
+}

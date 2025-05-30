@@ -8,5 +8,6 @@ void running(const char *description);
 void successtest();
 void runningtest(const char *description);
 void allsuccess();
+void errortest(const char *description);
 
 #endif
