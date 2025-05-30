@@ -2,6 +2,7 @@
 #include "document_test.c"
 #include "documents_list_test.c"
 #include "links_list_test.c"
+#include "graph_test.c"
 #include "../src/graph.h"
 #include "utils.h"
 
