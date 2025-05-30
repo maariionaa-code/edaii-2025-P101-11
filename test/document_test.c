@@ -5,7 +5,7 @@
 void test_initDocumentFromFile_valid() {
     runningtest("test_initDocumentFromFile_valid");
     // we initialize a document from a test file
-    Document *doc = initDocumentFromFile("data/sample.txt", 1);
+    Document *doc = initDocumentFromFile("datasets/wikipedia12/0.txt", 1);
     if (!doc) {
         // error if the document is null
         errortest("document is NULL");

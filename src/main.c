@@ -11,9 +11,6 @@
 #include "graph.h"
 #include "hashmap.h"
 
-// Global pointer to the graph
-DocumentGraph *global_graph = NULL;
-
 int compareDocs(const void *a, const void *b) {
     Document *docA = *(Document **)a;
     Document *docB = *(Document **)b;
