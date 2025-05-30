@@ -11,6 +11,8 @@
 #include "graph.h"
 #include "hashmap.h"
 
+DocumentGraph *global_graph = NULL;
+
 int compareDocs(const void *a, const void *b) {
     Document *docA = *(Document **)a;
     Document *docB = *(Document **)b;
@@ -71,6 +73,11 @@ int main(int argc, char *argv[]) {
                             insertHashSet(results, bucket->elements[i]);
                         }
                     }
+                    //for(size_t i = 0, count = 0; i < bucket->capacity && count < bucket->size; i++){
+                    //  if(bucket->elements[i]){
+                    //      insertHashSet(results, bucket->elements[i]);
+                    //      count++;
+                    //}} Lower search runtime complexity
                 }
                 free(w);
             }
