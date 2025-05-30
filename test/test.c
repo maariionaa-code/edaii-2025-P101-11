@@ -12,5 +12,6 @@ int main() {
     document_test();
     documents_list_test();
     links_list_test();
+    test_create_and_add_edge();
     allsuccess();
 }

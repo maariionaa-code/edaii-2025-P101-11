@@ -42,6 +42,24 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
+    /*const char *indexPath = "reverse_index.txt";
+    HashMap *index = NULL;
+    FILE *test = fopen(indexPath, "r");
+    if(test){
+        fclose(test);
+        printf("Loading reverse index from file...\n");
+        index = loadReverseIndex(indexPath, docs);
+    }else{
+        printf("Building reverse index...\n");
+        index = buildReverseIndex(docs);
+        saveReverseIndex(index, indexPath);
+    }
+    if(!index){
+        fprintf(stderr, "Failed to build or load reverse index\n");
+        freeDocuments(docs);
+        return EXIT_FAILURE;
+    }*/ //Serializing/deserializing reverse index
+
     int numDocs = 0;
     for (DocumentNode *curr = docs; curr; curr = curr->next) {
         if (curr->doc->id >= numDocs)

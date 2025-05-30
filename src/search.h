@@ -16,6 +16,9 @@ char* normalizeWord(const char *word);
 char* extractSnippet(const char *text, int word_position);
 int compareByRelevanceDesc(const void *a, const void *b);
 
+void saveReverseIndex(HashMap *index, const char *filename);
+HashMap* loadReverseIndex(const char *filename, DocumentNode *docs);
+
 extern DocumentGraph *global_graph;
 
 #endif // SEARCH_H

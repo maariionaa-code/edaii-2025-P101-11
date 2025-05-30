@@ -88,6 +88,22 @@ void searchDocuments(HashMap *index, QueryNode *query) {
         for (size_t i = 0; i < results->capacity; i++) { //iterate through the elements of the results HashSet
             if (results->elements[i]) { //check if the element slot is not empty.
                 Document *doc = (Document *)results->elements[i]; //cast void pointer to Document pointer
+                /*
+                int base_relevance = graphGetIndegree(global_graph, doc->id);
+                int boost = 0;
+
+                for (QueryNode *q = query; q; q = q->next) {
+                    char *norm = normalizeWord(q->word);
+                    if (norm) {
+                        if (strstr(doc->title, norm)) {
+                            boost += 10;  // match in title
+                        } else if (strstr(doc->body, norm)) {
+                            boost += 1;   // match in body
+                        }
+                        free(norm);
+                    }
+                }
+                */ //Short and full barrels
                 scored[count].doc = doc; //store the document
                 scored[count].relevance = graphGetIndegree(global_graph, doc->id); //calculate the relevance using the indegree from the global graph
                 count++; //increment the count of scored documents
@@ -177,4 +193,70 @@ void searchDocumentsLinear(DocumentNode *docs, QueryNode *query) {
             printed++; //increment the count of printed documents
         }
     }
+}
+
+void saveReverseIndex(HashMap *index, const char *filename) {
+    FILE *f = fopen(filename, "w");
+    if (!f) {
+        perror("fopen");
+        return;
+    }
+
+    for (size_t i = 0; i < index->capacity; i++) {
+        if (index->keys[i] != NULL) {
+            fprintf(f, "%s:", index->keys[i]);
+            HashSet *set = (HashSet *)index->values[i];
+            for (size_t j = 0; j < set->capacity; j++) {
+                if (set->elements[j] != NULL) {
+                    fprintf(f, "%d,", ((Document*)set->elements[j])->id);
+                }
+            }
+            fprintf(f, "\n");
+        }
+    }
+
+    fclose(f);
+}
+
+HashMap* loadReverseIndex(const char *filename, DocumentNode *docs) {
+    FILE *f = fopen(filename, "r");
+    if (!f) {
+        perror("fopen");
+        return NULL;
+    }
+
+    HashMap *index = createHashMap(10);
+    char line[1024];
+
+    while (fgets(line, sizeof(line), f)) {
+        char *colon = strchr(line, ':');
+        if (!colon) continue;
+
+        *colon = '\0';
+        char *word = line;
+        char *ids_str = colon + 1;
+
+        HashSet *set = createHashSet();
+        char *token = strtok(ids_str, ",");
+        while (token != NULL) {
+            int id = atoi(token);
+
+            // find document by id
+            Document *doc = NULL;
+            for (DocumentNode *curr = docs; curr; curr = curr->next) {
+                if (curr->doc->id == id) {
+                    doc = curr->doc;
+                    break;
+                }
+            }
+
+            if (doc) insertHashSet(set, doc);
+            token = strtok(NULL, ",");
+        }
+
+        insertHashMap(index, strdup(word), set);
+    }
+
+    fclose(f);
+    return index;
 }
