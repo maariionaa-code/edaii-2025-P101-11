@@ -21,12 +21,8 @@ int compareDocs(const void *a, const void *b) {
 }
 
 int main(int argc, char *argv[]) {
-<<<<<<< HEAD
-=======
     printf("\nWelcome to EDA 2!\n\n");
     printf("Factorial of 4 is %d\n", fact(4));
-
->>>>>>> bd8a0442f40bf66687299618e4e0a87efb618d3c
     const char *datasetPath = (argc > 1) ? argv[1] : "datasets/wikipedia270";
 
     DocumentNode *docs = loadDocuments(datasetPath);
