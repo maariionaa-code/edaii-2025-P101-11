@@ -9,7 +9,6 @@ Group number: G11
 
 - laia.escudero01@estudiant.upf.edu
 - mariona.espi01@estudiant.upf.edu
-- dmytro.shelest01@estudiant.upf.edu
 
 # Plagiarism Disclaimer
 - You **MUST NOT** look at anyone else's solutions, including previous year students and external tutors.
