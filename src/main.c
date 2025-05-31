@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
             printf("---\nrelevance score: %.0f\n\n", array[i]->relevance);
         }
 
-        printf("[%d results]\n", idx);
+        printf("[%d results]\n", idx-1);
         printf("\n------------------------------\n");
         printf("Select document (0-%d): ", limit - 1);
         int choice = -1;
