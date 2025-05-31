@@ -115,6 +115,8 @@ int main(int argc, char *argv[]) {
         }
         qsort(array, idx, sizeof(Document*), compareDocs);
 
+
+        // print 5 best
         int limit = idx < 5 ? idx : 5;
         printf("\n");
         for (int i = 0; i < limit; i++) {
