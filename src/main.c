@@ -10,6 +10,7 @@
 #include "queue.h"
 #include "graph.h"
 #include "hashmap.h"
+#include "time.h"
 
 DocumentGraph *global_graph = NULL;
 
@@ -77,6 +78,8 @@ int main(int argc, char *argv[]) {
         input[strcspn(input, "\n")] = '\0';
         if (strlen(input) == 0) break;
 
+        clock_t start = clock();
+
         enqueueQuery(input);
         QueryNode *query = initQueryFromString(input);
 
@@ -115,6 +118,8 @@ int main(int argc, char *argv[]) {
         }
         qsort(array, idx, sizeof(Document*), compareDocs);
 
+        clock_t end = clock();
+        double elapsed = (double)(end - start) / CLOCKS_PER_SEC;
 
         // print 5 best
         int limit = idx < 5 ? idx : 5;
@@ -132,6 +137,7 @@ int main(int argc, char *argv[]) {
             printf("---\nrelevance score: %.0f\n\n", array[i]->relevance);
         }
 
+        printf("[%d results] | Search completed in %.6f seconds.\n", idx, elapsed);
         printf("[%d results]\n", idx);
         printf("\n------------------------------\n");
         printf("Select document (0-%d): ", limit - 1);
