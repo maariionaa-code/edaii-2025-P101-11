@@ -11,7 +11,7 @@
 <img width="613" alt="Captura de pantalla 2025-06-02 a les 10 29 41" src="https://github.com/user-attachments/assets/878a3349-0d2f-4314-9ac8-5e4c79d7ff50" />
 
 3. Search time: reverse index vs linear search
-![Search Time Comparison](img/search_time.png)
+![search_time](https://user-images.githubusercontent.com/xxxxx/yourimage.png)
 
 The results show that the search time with a reverse index remains almost constant, even as the number of documents increases significantly. In contrast, linear search time grows steadily, demonstrating the efficiency of using a reverse index in large datasets.
 
