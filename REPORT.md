@@ -8,13 +8,19 @@
 
 3. Search time: reverse index vs linear search
 
+![search_time png](https://github.com/user-attachments/assets/a3739004-75f3-43a7-bc89-4f8eda7b8caf)
+
 The results show that the search time with a reverse index remains almost constant, even as the number of documents increases significantly. In contrast, linear search time grows steadily, demonstrating the efficiency of using a reverse index in large datasets.
 
 4. Initialization time for different hashmap slot count settings 
 
+![initialization time](https://github.com/user-attachments/assets/8d8c45b7-b8b5-44ca-8254-d8ed4b55bbbd)
+
 Increasing the number of hashmap slots significantly reduced the initialization time, especially when going from 100 to 1000 slots, due to fewer collisions and faster insertions. However, beyond 5000 slots, the performance gain was marginal, suggesting a trade-off between memory usage and speed.
 
 5. Search time for different hashmap slot count settings
+
+![search time](https://github.com/user-attachments/assets/f7864186-e985-4613-9a0d-a5d25bb7c8fa)
 
 Search time decreased significantly as the hashmap slot count increased, especially between 100 and 1000 slots, due to a reduction in collisions during keyword lookup. However, beyond 5000 slots, improvements were minimal, indicating diminishing returns in search speed for higher capacities.
 
